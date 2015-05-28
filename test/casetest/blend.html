@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>case测试</title>
+    <link rel="stylesheet" href="" >
+    <style>
+        *{line-height: 180%;}
+    </style>
+    <script src="/third_party/zepto.js"></script>
+    <script src="/third_party/require.js"></script>
+</head>
+<body>
+<button type="button" id="ready">ready事件</button><br/>
+<button type="button" id="open">新窗口打开QQ</button><br/>
+<button type="button" id="open1">新窗口打开163</button><br/>
+<button type="button" id="back">返回</button><br/>
+<button type="button" id="calendar">日历calendar(2015-04-07~06-10)</button><br/>
+<button type="button" id="calendar1">日历calendar1(2015-02-03~2015-08-10)</button><br/>
+<button type="button" id="hideCal">隐藏日历</button><br/>
+<script>
+    Date.prototype.format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+
+    document.addEventListener('UIXEvent', function (e) {
+        //alert(e.data);
+        var data = JSON.parse(e.data);
+
+        //alert(data.date);
+        alert("你选择的日期为:" + new Date(parseInt(data.date)).format('yyyy-MM-dd'));
+        //alert(e.type);
+    });
+    require.config({
+        baseUrl:"../../src/",
+        urlArgs: "bust=" +  (new Date()).getTime()
+    });
+    require(['blend','core/native'], function (blend, nativeApi) {
+        var navigation;
+        var _eval = {
+            "open" : function(){
+                blend.open('http://m.qq.com');
+            },
+            "open1" : function(){
+                blend.open('http://m.163.com');
+            },
+            "back" : function(){
+                blend.back();
+            },
+            "ready" : function(){
+                blend.ready(function(){
+                    alert("isUIX：" + blend.isUIX);
+                    alert("ready时间：" + blend.initTime)
+                });
+            },
+            "calendar" : function(){
+                nativeApi.dataHook('widget',{
+                    type: 'calendar',
+                    options:{
+                        display: true,
+                        options:{
+                            id:'cccccccccccc',
+                            date: (new Date()*1),
+                            from: (new Date('2015-04-07')*1),
+                            to: (new Date('2015-06-10')*1)
+                        }
+                    }
+                })
+            },
+            "calendar1" : function(){
+                nativeApi.dataHook('widget',{
+                    type: 'calendar',
+                    options:{
+                        display: true,
+                        options:{
+                            id:'cccccccccccc',
+                            date: (new Date()*1),
+                            from: (new Date('2015-02-07')*1),
+                            to: (new Date('2015-10-10')*1)
+                        }
+                    }
+                })
+            },
+            'hideCal' : function(){
+                nativeApi.dataHook('widget',{
+                    type: 'calendar',
+                    options:{
+                        display: false
+                    }
+                })
+            }
+        }
+        $('input[type=button],button').click(function(e){
+            var id = this.id;
+            console.log(id+"=============="+id);
+            if(_eval[id]){
+                _eval[id].call(_eval);
+            }else{
+                alert('没有此case')
+            }
+        });
+    });
+</script>
+</body>
+</html>

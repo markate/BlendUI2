@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>case测试</title>
+    <link rel="stylesheet" href="" >
+    <style>
+        *{line-height: 180%;}
+    </style>
+    <script src="/third_party/zepto.js"></script>
+    <script src="/third_party/require.js"></script>
+</head>
+<body>
+<button type="button" id="oloading">打开loading</button><br/>
+<button type="button" id="cloading">隐藏loading</button><br/>
+<script>
+    require.config({
+        baseUrl:"../../src/",
+        urlArgs: "bust=" +  (new Date()).getTime()
+    });
+    require(['blend'], function (blend) {
+        var loading = blend.create('loading');
+        var _eval = {
+            "oloading" : function(){
+                loading.show();
+            },
+            "cloading" : function(){
+                loading.hide();
+            }
+
+        }
+        $('input[type=button],button').click(function(e){
+            var id = this.id;
+            console.log(id+"=============="+id);
+            if(_eval[id]){
+                _eval[id].call(_eval);
+            }else{
+                alert('没有此case')
+            }
+        });
+    });
+</script>
+</body>
+</html>
